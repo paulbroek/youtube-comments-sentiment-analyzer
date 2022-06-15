@@ -1,10 +1,10 @@
 from argparse import ArgumentParser
 
 from data_cleaner import clean_comments
-from utils import logger, get_configuration
-from sentiment_analyzer import create_dataframe_from_comments, analyze_comments
-from youtube_service import YoutubeService
+from sentiment_analyzer import analyze_comments, create_dataframe_from_comments
+from utils import get_configuration, logger
 from visualize import create_pie_chart
+from youtube_service import YoutubeService
 
 
 def get_arg_parser() -> ArgumentParser:
@@ -66,7 +66,10 @@ def main():
         cleaned_df = clean_comments(df)
         results_df = analyze_comments(cleaned_df)
 
+        results_df.to_csv("output/res.csv", index=False)
         video_title = service.get_video_title()
+
+        # raise SystemExit("inspecting results_df")
 
         create_pie_chart(results_df, video_title, output_file)
 
