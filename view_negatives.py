@@ -1,6 +1,12 @@
 """view_negatives.py.
 
 Open dataset created by yt_comments_analyzer.py and print top negative comments of a YouTube video.
+
+Usage:
+    python yt_comments_analyzer.py -u \
+        https://www.youtube.com/watch?v=XA2WjJbmmoM
+    
+    print_top_negative_comments(df)
 """
 
 import pandas as pd
@@ -24,11 +30,9 @@ def print_top_negative_comments(
 ) -> None:
     """Print top negative comments from dataframe.
 
-    Dataframe was created b y running yt_comments_analyzer.py, example:
-        python yt_comments_analyzer.py -u \
-            https://www.youtube.com/watch?v=XA2WjJbmmoM
-        
-        print_top_negative_comments(df)
+    Usage:
+        print_top_negative_comments(df, onlyNegative=1, top=40)
+
     """
     # use only negative comments
     if onlyNegative:
@@ -46,7 +50,7 @@ def print_top_negative_comments(
 
 def main() -> None:
     """Contains main functionality."""
-    df = pd.read_csv(FILE)
+    df = pd.read_csv(FILE, lineterminator='\n')
 
     df.sort_values(SCORE_COL, ascending=True, inplace=True)
 
