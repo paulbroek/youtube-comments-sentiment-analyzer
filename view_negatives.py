@@ -6,11 +6,11 @@ Usage:
     python yt_comments_analyzer.py -u \
         https://www.youtube.com/watch?v=XA2WjJbmmoM
     
-    print_top_negative_comments(df)
+    ipy view_negatives.py
 """
 
 import pandas as pd
-from colorama import Fore, Style
+from colorama import Fore, Style  # type: ignore[import]
 
 FILE = "output/res.csv"
 
