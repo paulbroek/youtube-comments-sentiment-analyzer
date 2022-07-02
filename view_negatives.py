@@ -1,8 +1,11 @@
-"""view_negatives.py.
+r"""view_negatives.py.
 
 Open dataset created by yt_comments_analyzer.py and print top negative comments of a YouTube video.
 
 Usage:
+    export GCLOUD_CONFIG_FILE=/home/paul/repos/gcloud-utils/gcloud_utils/config/config.yaml && \                                                                                                                                          1 ⨯
+    export GOOGLE_APPLICATION_CREDENTIALS="/home/paul/Downloads/service-account-file.json"
+
     python yt_comments_analyzer.py -u \
         https://www.youtube.com/watch?v=XA2WjJbmmoM
     
@@ -49,7 +52,7 @@ def print_top_negative_comments(
 
 
 def main() -> None:
-    """Contains main functionality."""
+    """Load comments and print negative comments."""
     df = pd.read_csv(FILE, lineterminator='\n')
 
     df.sort_values(SCORE_COL, ascending=True, inplace=True)
