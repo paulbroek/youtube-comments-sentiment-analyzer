@@ -1,6 +1,6 @@
 """telegram_bot.py.
 
-User can send youtube url, bot replies with a summary of negative comments.
+User can send youtube url, bot replies with a summary of top negative comments.
 
 run bot locally:
     ipy telegram_bot.py -i -- --dryrun
@@ -30,7 +30,6 @@ logger = setup_logger(
 )  # URGENT WARNING DEBUG
 
 load_dotenv()
-
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
 # setup updating together with our telegram api token
@@ -42,7 +41,7 @@ updater = Updater(
     use_context=True,
 )
 
-# get the dispatcher to register handlers
+# dispatcher to register handlers
 dp = updater.dispatcher
 
 # recognizing any url format sent to the bot
@@ -88,8 +87,8 @@ def help_more(update: Update, _: CallbackContext):
     return update.message.reply_html(toEscapeMsg(msg))
 
 
-# for error debugging
 def error(update: Update, context: CallbackContext):
+    """Log traceback for any internal bot errors."""
     logger.warning(
         'Update "%s" \n\ncaused error "%s \n%s"',
         update,
@@ -119,7 +118,6 @@ MAX_TG_MSG_LEN = 4096
 
 def text(update: Update, _: CallbackContext):
     """General method that responds to user text input."""
-
     res = match_any_url1.search(update.message.text) or match_any_url2.search(
         update.message.text
     )
@@ -137,13 +135,11 @@ def text(update: Update, _: CallbackContext):
         sel_df = df[[SCORE_COL, TEXT_COL]].head(MAX_COMMENT_LEN)
         recs = sel_df.to_records(index=False)
 
-        # sep = '\n\n ---------------------- \n\n'
-        # msg = sep + sep.join(sel_df.to_list())
         msg = "\n\n".join(map(lambda x: "score={:.2f} \n{}".format(*x), recs))
 
-        logger.info(f"print df: \n{df.head(10)}")
+        logger.info(f"print df: \n{df.head(5)}")
 
-        # todo: truncate message if it still too long
+        # truncate message if it still too long
         msglen = len(msg)
         logger.info(f"{msglen=:,}")
         if msglen > 4096:
@@ -156,21 +152,16 @@ def text(update: Update, _: CallbackContext):
         update.message.reply_text("Send me a valid YouTube url for comments analysis")
 
 
-# to start the bot
-def main(updater, dp):
-
+def main():
+    """Describe main functionality."""
     # add command handlers for different command
     dp.add_handler(CommandHandler("start", start))
-
     dp.add_handler(CommandHandler("help_more", help_more))
     dp.add_handler(CommandHandler("help", help_))
 
     ##############################
-    # non command_handlers below
+    # other handlers below
     ##############################
-
-    # dp.add_handler(CallbackQueryHandler(InlineKeyboardHandler))
-    # dp.add_handler(CallbackQueryHandler(main_menu, pattern="main"))
 
     # add an handler for normal text (not commands)
     dp.add_handler(MessageHandler(Filters.text, text))
@@ -229,4 +220,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not args.dryrun:
-        main(updater, dp)
+        main()

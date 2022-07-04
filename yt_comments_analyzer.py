@@ -69,8 +69,6 @@ def main(manual_args=None):
         results_df.to_csv("output/res.csv", index=False)
         video_title = service.get_video_title()
 
-        # raise SystemExit("inspecting results_df")
-
         create_pie_chart(results_df, video_title, output_file)
 
     except KeyboardInterrupt:

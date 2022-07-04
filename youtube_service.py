@@ -1,13 +1,11 @@
-from typing import Generator
-
-from googleapiclient.discovery import build
-from rich.console import Console
+from typing import Generator, List
 
 from constants import API_KEY, API_SERVICE_NAME, API_VERSION
+from googleapiclient.discovery import build
+from rich.console import Console
 from utils import logger
 
-
-Comments = list[str]
+Comments = List[str]
 CommentGenerator = Generator[Comments, None, None]
 
 
@@ -25,8 +23,16 @@ class YoutubeService:
     def __init__(self, video_url: str) -> None:
 
         self._video_url = video_url
-        self._video_id = video_url.split("?v=")[1]
+        self._video_id = self.extract_video_id(video_url)
         self._service = build(API_SERVICE_NAME, API_VERSION, developerKey=API_KEY)
+
+    @staticmethod
+    def extract_video_id(url: str) -> str:
+        res = url.split("?v=")
+        if len(res) == 1:
+            return url.split("/")[-1]
+
+        return res[1]
 
     def get_comment_threads(self, include_replies: bool = False) -> CommentGenerator:
         """Get the top level comments. If --include_replies option is given,
