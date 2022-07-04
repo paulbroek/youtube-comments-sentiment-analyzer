@@ -4,3 +4,5 @@ nltk==3.7
 matplotlib==3.5.1
 rich==12.2.0
 python-dotenv
+python-telegram-bot
+colorama

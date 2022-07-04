@@ -16,8 +16,7 @@ COPY . /tmp
 RUN pip install -U git+https://git@github.com/paulbroek/rarc-utils.git 
 
 # adds deps here that can later me moved to requirements.txt
-RUN pip install python-telegram-bot
-RUN pip install colorama
+# RUN pip install colorama
 
 WORKDIR /src
 
