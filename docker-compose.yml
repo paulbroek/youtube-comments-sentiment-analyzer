@@ -13,5 +13,6 @@ services:
         volumes:
             - ./:/mnt_src
             - /home/paul/Downloads/service-account-file.json:/tmp/service-account-file.json
+            - /mnt_src/output
         environment:
             - GOOGLE_APPLICATION_CREDENTIALS=/tmp/service-account-file.json
