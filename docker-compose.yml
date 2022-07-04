@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+    telegram-yt-comments-bot:
+        restart: unless-stopped
+        build: .
+        container_name: telegram-yt-comments-bot
+        command:
+            - /bin/bash
+            - -c
+            - |
+                cd /mnt_src
+                python telegram_bot.py
+        volumes:
+            - ./:/mnt_src
+            - /home/paul/Downloads/service-account-file.json:/tmp/service-account-file.json
+        environment:
+            - GOOGLE_APPLICATION_CREDENTIALS=/tmp/service-account-file.json

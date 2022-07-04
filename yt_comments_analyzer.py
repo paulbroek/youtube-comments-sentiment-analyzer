@@ -41,13 +41,13 @@ def get_arg_parser() -> ArgumentParser:
     return arg_parser
 
 
-def main():
+def main(manual_args=None):
     """Entry point for the tool"""
 
-    try:
-        arg_parser = get_arg_parser()
-        args = arg_parser.parse_args()
+    arg_parser = get_arg_parser()
+    args = arg_parser.parse_args(manual_args)
 
+    try:
         if not (args.url or args.useconfig):
             arg_parser.print_help()
             raise SystemExit("Missing parameter!")
@@ -78,5 +78,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()

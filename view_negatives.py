@@ -12,6 +12,7 @@ Usage:
     ipy view_negatives.py
 """
 
+import numpy as np
 import pandas as pd
 from colorama import Fore, Style  # type: ignore[import]
 
@@ -24,41 +25,66 @@ SENTIMENT = "Sentiment"
 NEGATIVE = "Negative"
 
 
-def print_top_negative_comments(
+def extract_negative_comments(df: pd.DataFrame, maxstrlen=None) -> pd.DataFrame:
+    df = df[df[SENTIMENT] == NEGATIVE].copy()
+
+    # optionally truncate str columns
+    if maxstrlen is not None:
+        text_cols = df.filter(regex=".+Text$").columns
+        for col in text_cols:
+            df[f"{col} len"] = df[col].map(len)
+            trunccol = f"{col} trunc"
+            df[trunccol] = df[col].str.slice(0, maxstrlen)
+            df[trunccol] = np.where(
+                df[f"{col} len"] > maxstrlen, df[trunccol], df[trunccol] + "..."
+            )
+
+    return df
+
+
+def format_negative_comments(
     df: pd.DataFrame,
     textCol=TEXT_COL,
     sentimentCol=SCORE_COL,
     onlyNegative=True,
+    maxstrlen=None,
     top=20,
-) -> None:
+) -> str:
     """Print top negative comments from dataframe.
 
     Usage:
-        print_top_negative_comments(df, onlyNegative=1, top=40)
+        format_negative_comments(df, onlyNegative=1, top=40)
 
     """
     # use only negative comments
     if onlyNegative:
-        df = df[df[SENTIMENT] == NEGATIVE].copy()
+        df = extract_negative_comments(df, maxstrlen=maxstrlen)
 
     assert (
         not df.empty
-    ), "please pass non-empty dataframe, or toggle `onlyNegative=False`"
+    ), "please pass non-empty dataframe, or toggle `onlyNegative` to False"
+
+    output = ""
 
     for ix, (_, row) in enumerate(df.head(top).iterrows()):
         sentiment = row.loc[sentimentCol]
-        print(f"{Fore.RED}negative comment #{ix} {Style.RESET_ALL} {sentiment=:.3f}")
-        print(" ", row.loc[textCol], "\n")
+        output += (
+            f"{Fore.RED}negative comment #{ix} {Style.RESET_ALL} {sentiment=:.3f}\n"
+        )
+        output += f" {row.loc[textCol]}\n"
+
+    return output
 
 
-def main() -> None:
+def main() -> pd.DataFrame:
     """Load comments and print negative comments."""
-    df = pd.read_csv(FILE, lineterminator='\n')
+    df = pd.read_csv(FILE, lineterminator="\n")
 
     df.sort_values(SCORE_COL, ascending=True, inplace=True)
 
-    print_top_negative_comments(df, onlyNegative=1, top=40)
+    return df
 
 
 if __name__ == "__main__":
-    main()
+    df_ = main()
+    print(format_negative_comments(df_, onlyNegative=1, top=40, maxstrlen=50))
