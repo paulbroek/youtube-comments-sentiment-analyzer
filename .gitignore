@@ -10,6 +10,9 @@ sentiment_analysis_chart.png
 
 *.pickle
 
+# ignore vim session files
+*.vim
+
 # Distribution / packaging
 .Python
 build/
